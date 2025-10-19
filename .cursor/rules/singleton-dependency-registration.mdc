@@ -1,0 +1,5 @@
+---
+description: All dependency registration should be just registerSingleton
+globs:
+alwaysApply: true
+---

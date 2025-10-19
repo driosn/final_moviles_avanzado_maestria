@@ -1,0 +1,133 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../../../core/injection/injection_container.dart';
+import '../../domain/entities/store.dart';
+import '../bloc/stores_bloc.dart';
+import '../bloc/stores_event.dart';
+import '../bloc/stores_state.dart';
+
+class CreateStorePage extends StatefulWidget {
+  const CreateStorePage({super.key});
+
+  @override
+  State<CreateStorePage> createState() => _CreateStorePageState();
+}
+
+class _CreateStorePageState extends State<CreateStorePage> {
+  final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
+  City _selectedCity = City.laPaz;
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Crear Tienda'), backgroundColor: Colors.orange, foregroundColor: Colors.white),
+      body: BlocListener<StoresBloc, StoresState>(
+        bloc: sl<StoresBloc>(),
+        listener: (context, state) {
+          if (state is StoreCreated) {
+            Navigator.of(context).pop<bool>();
+          } else if (state is StoresError) {
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(state.message), backgroundColor: Colors.red));
+          }
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const Text('Información de la Tienda', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 24),
+
+                // Store Name Field
+                TextFormField(
+                  controller: _nameController,
+                  decoration: const InputDecoration(
+                    labelText: 'Nombre de la tienda',
+                    prefixIcon: Icon(Icons.store),
+                    border: OutlineInputBorder(),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Por favor ingresa el nombre de la tienda';
+                    }
+                    if (value.length < 2) {
+                      return 'El nombre debe tener al menos 2 caracteres';
+                    }
+                    return null;
+                  },
+                ),
+                const SizedBox(height: 16),
+
+                // City Selection
+                DropdownButtonFormField<City>(
+                  value: _selectedCity,
+                  decoration: const InputDecoration(
+                    labelText: 'Ciudad',
+                    prefixIcon: Icon(Icons.location_city),
+                    border: OutlineInputBorder(),
+                  ),
+                  items: const [
+                    DropdownMenuItem(value: City.laPaz, child: Text('La Paz')),
+                    DropdownMenuItem(value: City.cochabamba, child: Text('Cochabamba')),
+                    DropdownMenuItem(value: City.santaCruz, child: Text('Santa Cruz')),
+                  ],
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedCity = value!;
+                    });
+                  },
+                ),
+                const SizedBox(height: 32),
+
+                // Create Button
+                BlocBuilder<StoresBloc, StoresState>(
+                  builder: (context, state) {
+                    return ElevatedButton(
+                      onPressed: state is StoresLoading
+                          ? null
+                          : () {
+                              if (_formKey.currentState!.validate()) {
+                                context.read<StoresBloc>().add(
+                                  CreateStore(name: _nameController.text.trim(), city: _selectedCity),
+                                );
+                              }
+                            },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.orange,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      ),
+                      child: state is StoresLoading
+                          ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                              ),
+                            )
+                          : const Text('Crear Tienda', style: TextStyle(fontSize: 16)),
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
