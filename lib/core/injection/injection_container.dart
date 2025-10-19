@@ -9,6 +9,16 @@ import '../../features/auth/domain/usecases/sign_in_usecase.dart';
 import '../../features/auth/domain/usecases/sign_out_usecase.dart';
 import '../../features/auth/domain/usecases/sign_up_usecase.dart';
 import '../../features/auth/presentation/bloc/auth_bloc.dart';
+import '../../features/products/data/datasources/products_remote_datasource.dart';
+import '../../features/products/data/repositories/products_repository_impl.dart';
+import '../../features/products/domain/repositories/products_repository.dart';
+import '../../features/products/domain/usecases/create_product_usecase.dart';
+import '../../features/products/domain/usecases/delete_product_usecase.dart';
+import '../../features/products/domain/usecases/get_all_products_usecase.dart';
+import '../../features/products/domain/usecases/get_product_by_id_usecase.dart';
+import '../../features/products/domain/usecases/update_product_usecase.dart';
+import '../../features/products/domain/usecases/upload_image_usecase.dart';
+import '../../features/products/presentation/bloc/products_bloc.dart';
 import '../../features/stores/data/datasources/stores_remote_datasource.dart';
 import '../../features/stores/data/repositories/stores_repository_impl.dart';
 import '../../features/stores/domain/repositories/stores_repository.dart';
@@ -104,6 +114,32 @@ Future<void> initializeDependencies() async {
       getAvailableUsersUseCase: sl(),
       assignUserToStoreUseCase: sl(),
       removeUserFromStoreUseCase: sl(),
+    ),
+  );
+
+  // Products Data sources
+  sl.registerLazySingleton<ProductsRemoteDataSource>(() => ProductsRemoteDataSourceImpl(supabaseClient: sl()));
+
+  // Products Repository
+  sl.registerLazySingleton<ProductsRepository>(() => ProductsRepositoryImpl(remoteDataSource: sl()));
+
+  // Products Use cases
+  sl.registerLazySingleton(() => GetAllProductsUseCase(repository: sl()));
+  sl.registerLazySingleton(() => GetProductByIdUseCase(repository: sl()));
+  sl.registerLazySingleton(() => CreateProductUseCase(repository: sl()));
+  sl.registerLazySingleton(() => UpdateProductUseCase(repository: sl()));
+  sl.registerLazySingleton(() => DeleteProductUseCase(repository: sl()));
+  sl.registerLazySingleton(() => UploadImageUseCase(repository: sl()));
+
+  // Products Bloc
+  sl.registerFactory(
+    () => ProductsBloc(
+      getAllProductsUseCase: sl(),
+      getProductByIdUseCase: sl(),
+      createProductUseCase: sl(),
+      updateProductUseCase: sl(),
+      deleteProductUseCase: sl(),
+      uploadImageUseCase: sl(),
     ),
   );
 }

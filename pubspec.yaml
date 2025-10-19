@@ -48,6 +48,9 @@ dependencies:
   # Navigation
   go_router: ^14.2.7
   
+  # Image Picker
+  image_picker: ^1.0.4
+  
   # Utils
   equatable: ^2.0.5
   dartz: ^0.10.1

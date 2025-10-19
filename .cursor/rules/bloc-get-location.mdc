@@ -1,0 +1,5 @@
+---
+description: Always use blocs from service locator, dont use context to read blocs, prefer to use service locator
+globs:
+alwaysApply: true
+---

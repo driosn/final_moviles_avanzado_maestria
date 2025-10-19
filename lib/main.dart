@@ -1,4 +1,5 @@
 import 'package:final_movil_aplicaciones_avanzado/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:final_movil_aplicaciones_avanzado/features/products/presentation/bloc/products_bloc.dart';
 import 'package:final_movil_aplicaciones_avanzado/features/stores/presentation/bloc/stores_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -21,6 +22,7 @@ class MyApp extends StatelessWidget {
       providers: [
         BlocProvider(create: (context) => sl<AuthBloc>()),
         BlocProvider(create: (context) => sl<StoresBloc>()),
+        BlocProvider(create: (context) => sl<ProductsBloc>()),
       ],
       child: MaterialApp(
         title: 'Sistema de Autenticación',

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../products/presentation/pages/products_list_page.dart';
 import '../../../stores/presentation/pages/stores_list_page.dart';
 import '../../../users/presentation/pages/user_management_page.dart';
 import '../bloc/auth_bloc.dart';
@@ -67,10 +68,20 @@ class AdminHomePage extends StatelessWidget {
                   ),
                   _buildAdminCard(
                     context,
+                    icon: Icons.inventory,
+                    title: 'Productos',
+                    subtitle: 'Gestionar productos',
+                    color: Colors.purple,
+                    onTap: () {
+                      Navigator.of(context).push(MaterialPageRoute(builder: (context) => const ProductsListPage()));
+                    },
+                  ),
+                  _buildAdminCard(
+                    context,
                     icon: Icons.analytics,
                     title: 'Reportes',
                     subtitle: 'Ver estadísticas',
-                    color: Colors.purple,
+                    color: Colors.indigo,
                     onTap: () {
                       ScaffoldMessenger.of(
                         context,
