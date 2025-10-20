@@ -1,3 +1,10 @@
+import 'package:final_movil_aplicaciones_avanzado/features/orders/data/datasources/orders_remote_datasource.dart';
+import 'package:final_movil_aplicaciones_avanzado/features/orders/data/repositories/orders_repository_impl.dart';
+import 'package:final_movil_aplicaciones_avanzado/features/orders/domain/repositories/orders_repository.dart';
+import 'package:final_movil_aplicaciones_avanzado/features/orders/domain/usecases/create_order_usecase.dart';
+import 'package:final_movil_aplicaciones_avanzado/features/orders/domain/usecases/get_order_by_id_usecase.dart';
+import 'package:final_movil_aplicaciones_avanzado/features/orders/domain/usecases/get_orders_by_user_usecase.dart';
+import 'package:final_movil_aplicaciones_avanzado/features/orders/presentation/bloc/orders_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as supabase;
 
@@ -173,5 +180,20 @@ Future<void> initializeDependencies() async {
       updateStockUseCase: sl(),
       getStockMovementsUseCase: sl(),
     ),
+  );
+
+  // Orders
+  sl.registerLazySingleton<OrdersRemoteDataSource>(() => OrdersRemoteDataSourceImpl(sl()));
+
+  sl.registerLazySingleton<OrdersRepository>(() => OrdersRepositoryImpl(sl()));
+
+  sl.registerLazySingleton<CreateOrderUseCase>(() => CreateOrderUseCase(sl()));
+
+  sl.registerLazySingleton<GetOrdersByUserUseCase>(() => GetOrdersByUserUseCase(sl()));
+
+  sl.registerLazySingleton<GetOrderByIdUseCase>(() => GetOrderByIdUseCase(sl()));
+
+  sl.registerFactory<OrdersBloc>(
+    () => OrdersBloc(createOrderUseCase: sl(), getOrdersByUserUseCase: sl(), getOrderByIdUseCase: sl()),
   );
 }
