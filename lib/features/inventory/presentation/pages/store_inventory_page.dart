@@ -18,10 +18,19 @@ class StoreInventoryPage extends StatefulWidget {
 }
 
 class _StoreInventoryPageState extends State<StoreInventoryPage> {
+  late InventoryBloc inventoryBloc;
+
+  @override
+  void initState() {
+    super.initState();
+    inventoryBloc = sl<InventoryBloc>();
+    inventoryBloc.add(LoadAllProductsWithInventory(storeId: widget.store.id));
+  }
+
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => sl<InventoryBloc>()..add(LoadAllProductsWithInventory(storeId: widget.store.id)),
+    return BlocProvider.value(
+      value: inventoryBloc,
       child: Scaffold(
         appBar: AppBar(
           title: Text('Inventario - ${widget.store.name}'),
@@ -234,9 +243,7 @@ class _StoreInventoryPageState extends State<StoreInventoryPage> {
       builder: (context) => UpdateStockDialog(
         inventoryItem: inventoryItem,
         onStockUpdated: (newStock, reason) {
-          context.read<InventoryBloc>().add(
-            UpdateStock(inventoryItemId: inventoryItem.id, newStock: newStock, reason: reason),
-          );
+          inventoryBloc.add(UpdateStock(inventoryItemId: inventoryItem.id, newStock: newStock, reason: reason));
         },
       ),
     );

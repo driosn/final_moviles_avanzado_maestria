@@ -16,13 +16,13 @@ class InventoryItemModel extends domain.InventoryItem {
   factory InventoryItemModel.fromJson(Map<String, dynamic> json) {
     return InventoryItemModel(
       id: json['id'] as String,
-      storeId: json['store_id'] as String,
-      productId: json['product_id'] as String,
+      storeId: json['store_id'] ?? '',
+      productId: json['product_id'] ?? '',
       product: ProductModel.fromJson(json['products'] as Map<String, dynamic>),
-      stock: json['stock'] as int,
-      minStock: json['min_stock'] as int,
+      stock: json['stock'] ?? 0,
+      minStock: json['min_stock'] ?? 0,
       lastUpdated: DateTime.parse(json['last_updated'] as String),
-      updatedBy: json['updated_by'] as String,
+      updatedBy: json['updated_by'] ?? '',
     );
   }
 
