@@ -62,20 +62,6 @@ class ClienteHomePage extends StatelessWidget {
                     },
                   ),
                   const SizedBox(height: 16),
-                  _buildCustomerCard(
-                    context,
-                    icon: Icons.person_outline,
-                    title: 'Mi Perfil',
-                    subtitle: 'Próximamente - Gestiona tu perfil',
-                    onTap: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Funcionalidad próximamente disponible'),
-                          backgroundColor: Colors.orange,
-                        ),
-                      );
-                    },
-                  ),
                 ],
               ),
             ),
