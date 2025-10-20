@@ -39,3 +39,7 @@ class RemoveUserFromStore extends StoreAssignmentEvent {
   @override
   List<Object?> get props => [userId, storeId];
 }
+
+class LoadUserAssignedStores extends StoreAssignmentEvent {
+  const LoadUserAssignedStores();
+}

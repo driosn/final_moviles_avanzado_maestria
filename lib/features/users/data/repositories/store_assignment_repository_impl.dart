@@ -14,6 +14,11 @@ class StoreAssignmentRepositoryImpl implements StoreAssignmentRepository {
   }
 
   @override
+  Future<List<Store>> getUserAssignedStores() async {
+    return await remoteDataSource.getUserAssignedStores();
+  }
+
+  @override
   Future<List<User>> getUsersByRole(UserRole role) async {
     return await remoteDataSource.getUsersByRole(role);
   }

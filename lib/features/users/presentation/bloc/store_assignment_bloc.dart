@@ -5,12 +5,14 @@ import '../../domain/usecases/get_all_stores_usecase.dart';
 import '../../domain/usecases/get_assigned_users_usecase.dart';
 import '../../domain/usecases/get_available_users_usecase.dart';
 import '../../domain/usecases/get_gestor_users_usecase.dart';
+import '../../domain/usecases/get_user_assigned_stores_usecase.dart';
 import '../../domain/usecases/remove_user_from_store_usecase.dart';
 import 'store_assignment_event.dart';
 import 'store_assignment_state.dart';
 
 class StoreAssignmentBloc extends Bloc<StoreAssignmentEvent, StoreAssignmentState> {
   final GetAllStoresUseCase getAllStoresUseCase;
+  final GetUserAssignedStoresUseCase getUserAssignedStoresUseCase;
   final GetGestorUsersUseCase getGestorUsersUseCase;
   final GetAssignedUsersUseCase getAssignedUsersUseCase;
   final GetAvailableUsersUseCase getAvailableUsersUseCase;
@@ -19,6 +21,7 @@ class StoreAssignmentBloc extends Bloc<StoreAssignmentEvent, StoreAssignmentStat
 
   StoreAssignmentBloc({
     required this.getAllStoresUseCase,
+    required this.getUserAssignedStoresUseCase,
     required this.getGestorUsersUseCase,
     required this.getAssignedUsersUseCase,
     required this.getAvailableUsersUseCase,
@@ -29,6 +32,7 @@ class StoreAssignmentBloc extends Bloc<StoreAssignmentEvent, StoreAssignmentStat
     on<LoadStoreAssignments>(_onLoadStoreAssignments);
     on<AssignUserToStore>(_onAssignUserToStore);
     on<RemoveUserFromStore>(_onRemoveUserFromStore);
+    on<LoadUserAssignedStores>(_onLoadUserAssignedStores);
   }
 
   Future<void> _onLoadStoresAndUsers(LoadStoresAndUsers event, Emitter<StoreAssignmentState> emit) async {
@@ -82,6 +86,16 @@ class StoreAssignmentBloc extends Bloc<StoreAssignmentEvent, StoreAssignmentStat
 
       // Reload assignments
       add(LoadStoreAssignments(event.storeId));
+    } catch (e) {
+      emit(StoreAssignmentError(message: e.toString()));
+    }
+  }
+
+  Future<void> _onLoadUserAssignedStores(LoadUserAssignedStores event, Emitter<StoreAssignmentState> emit) async {
+    emit(StoreAssignmentLoading());
+    try {
+      final stores = await getUserAssignedStoresUseCase();
+      emit(UserAssignedStoresLoaded(stores: stores));
     } catch (e) {
       emit(StoreAssignmentError(message: e.toString()));
     }

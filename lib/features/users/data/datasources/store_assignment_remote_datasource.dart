@@ -7,6 +7,7 @@ import '../models/user_model.dart';
 
 abstract class StoreAssignmentRemoteDataSource {
   Future<List<Store>> getAllStores();
+  Future<List<Store>> getUserAssignedStores();
   Future<List<User>> getUsersByRole(UserRole role);
   Future<List<User>> getAssignedUsers(String storeId);
   Future<List<User>> getAvailableUsers(String storeId);
@@ -27,6 +28,70 @@ class StoreAssignmentRemoteDataSourceImpl implements StoreAssignmentRemoteDataSo
       return response.map((json) => StoreModel.fromJson(json) as Store).toList();
     } catch (e) {
       throw Exception('Error al cargar tiendas: $e');
+    }
+  }
+
+  @override
+  Future<List<Store>> getUserAssignedStores() async {
+    try {
+      final currentUserId = _supabaseClient.auth.currentUser?.id;
+      if (currentUserId == null) {
+        throw Exception('Usuario no autenticado');
+      }
+
+      print('DEBUG: Loading stores for user: $currentUserId');
+
+      // Verificar el rol del usuario actual
+      try {
+        final userProfile = await _supabaseClient
+            .from('user_profiles')
+            .select('role')
+            .eq('user_id', currentUserId)
+            .single();
+
+        print('DEBUG: User profile: $userProfile');
+        print('DEBUG: User role: ${userProfile['role']}');
+      } catch (e) {
+        print('DEBUG: Error getting user profile: $e');
+      }
+
+      // Primero verificar si hay asignaciones para este usuario
+      final assignmentsCheck = await _supabaseClient.from('store_assignments').select('*').eq('user_id', currentUserId);
+
+      print('DEBUG: Raw assignments check: $assignmentsCheck');
+      print('DEBUG: Assignments count: ${assignmentsCheck.length}');
+
+      if (assignmentsCheck.isEmpty) {
+        print('DEBUG: No assignments found for user $currentUserId');
+        return [];
+      }
+
+      // Ahora hacer la consulta con JOIN
+      final response = await _supabaseClient
+          .from('store_assignments')
+          .select('''
+            store_id,
+            stores!inner(*)
+          ''')
+          .eq('user_id', currentUserId);
+
+      print('DEBUG: Raw response with JOIN: $response');
+
+      if (response.isEmpty) {
+        print('DEBUG: No stores found after JOIN');
+        return [];
+      }
+
+      final stores = response.where((json) => json['stores'] != null).map((json) {
+        print('DEBUG: Processing store data: ${json['stores']}');
+        return StoreModel.fromJson(json['stores'] as Map<String, dynamic>) as Store;
+      }).toList();
+
+      print('DEBUG: Parsed stores: ${stores.length}');
+      return stores;
+    } catch (e) {
+      print('DEBUG: Error in getUserAssignedStores: $e');
+      throw Exception('Error al cargar tiendas asignadas: $e');
     }
   }
 

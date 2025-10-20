@@ -3,6 +3,7 @@ import '../entities/user.dart';
 
 abstract class StoreAssignmentRepository {
   Future<List<Store>> getAllStores();
+  Future<List<Store>> getUserAssignedStores();
   Future<List<User>> getUsersByRole(UserRole role);
   Future<List<User>> getAssignedUsers(String storeId);
   Future<List<User>> getAvailableUsers(String storeId);

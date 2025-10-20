@@ -45,6 +45,15 @@ class UserRemovedFromStore extends StoreAssignmentState {
   List<Object?> get props => [userId, storeId];
 }
 
+class UserAssignedStoresLoaded extends StoreAssignmentState {
+  final List<Store> stores;
+
+  const UserAssignedStoresLoaded({required this.stores});
+
+  @override
+  List<Object?> get props => [stores];
+}
+
 class StoreAssignmentError extends StoreAssignmentState {
   final String message;
 
